@@ -70,6 +70,7 @@ public class OrderService {
     }
 
     public List<Order> getOrdersByCustomerId(Integer customerId) {
-        return List.of((Order) repository.findByCustomerId(customerId));
+        //return List.of((Order) repository.findByCustomerId(customerId));
+        return repository.findByCustomerId(customerId);
     }
 }

@@ -46,10 +46,6 @@ public class OrderController {
         }
     }
 
-    @GetMapping()
-    public String getMessage(){
-        return "Server is up";
-    }
 
     /*@GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer orderId) {
