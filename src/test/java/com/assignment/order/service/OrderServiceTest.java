@@ -60,7 +60,7 @@ public class OrderServiceTest {
 
         // Assertions for the returned object
         assertNotNull(createdOrder);
-        assertEquals(orderId, createdOrder.getId()); // Assuming getter exists based on standard conventions
+        assertEquals(orderId, createdOrder.getOrderId()); // Assuming getter exists based on standard conventions
         assertEquals(OrderStatus.PENDING_INVENTORY_CHECK, createdOrder.getStatus());
 
         // Verify Database interactions
@@ -86,7 +86,7 @@ public class OrderServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(orderId, result.getId());
+        assertEquals(orderId, result.getOrderId());
         verify(repository, times(1)).findById(orderId);
     }
 
@@ -100,7 +100,7 @@ public class OrderServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(0, result.getId()); // Expecting default fallback object values
+        assertEquals(0, result.getOrderId()); // Expecting default fallback object values
         assertNull(result.getStatus());
     }
 
@@ -152,7 +152,7 @@ public class OrderServiceTest {
         Order circuitBreakerFallbackResult = orderService.createOrderFallback(101L, 500.0, exception);
         Order retryFallbackResult = orderService.handleServerErrorFallback(101L, 500.0, exception);
 
-        assertEquals(0, circuitBreakerFallbackResult.getId());
-        assertEquals(0, retryFallbackResult.getId());
+        assertEquals(0, circuitBreakerFallbackResult.getOrderId());
+        assertEquals(0, retryFallbackResult.getOrderId());
     }
 }

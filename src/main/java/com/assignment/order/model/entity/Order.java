@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Order {
     @Id
-    private Integer id;
+    private Integer orderId;
     private Integer customerId;
     private Integer productId;
     private Integer quantity;

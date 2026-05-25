@@ -34,7 +34,7 @@ public class OrderController {
             //OrderResponse response = OrderMapper.INSTANCE.toOrderResponse(order);
             //OrderResponse response = OrderMapper.INSTANCE.toOrderResponse(order, userMsg);
             //OrderResponse response = orderMapper.toOrderResponse(order, userMsg);
-            OrderResponse response = new OrderResponse(order.getId(),order.getCustomerId(),order.getStatus(),userMsg);// OrderMapper.INSTANCE.toOrderResponse(order, userMsg);
+            OrderResponse response = new OrderResponse(order.getOrderId(),order.getCustomerId(),order.getStatus(),userMsg);// OrderMapper.INSTANCE.toOrderResponse(order, userMsg);
 
             return ResponseEntity.accepted().body(response);
         }
