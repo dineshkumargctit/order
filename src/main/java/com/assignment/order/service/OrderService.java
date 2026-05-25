@@ -46,13 +46,18 @@ public class OrderService {
         return order;
     }
 
-    public Order createOrderFallback(Long orderId, Double amount, Throwable exception) {
+
+
+    //public Order createOrderFallback(Long orderId, Double amount, Throwable exception) {
+    public Order createOrderFallback(Integer orderId, OrderRequest orderRequest, Throwable exception) {
         log.error("Error in placing Order, triggering fallback Error: {}", exception.getMessage());
 
         return new Order(0,0,0,0,LocalDateTime.now(), null);
     }
 
-    public Order handleServerErrorFallback(Long orderId, Double amount, Throwable exception) {
+
+    //public Order handleServerErrorFallback(Long orderId, Double amount, Throwable exception) {
+    public Order handleServerErrorFallback(Integer orderId, OrderRequest orderRequest, Throwable exception) {
         log.error("Error in placing Order after multiple Retry Error: {}", exception.getMessage());
 
         return new Order(0,0,0,0,LocalDateTime.now(), null);
