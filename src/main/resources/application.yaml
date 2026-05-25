@@ -1,0 +1,86 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: order-service
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: order
+    password:
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      enable-idempotence: true
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+    consumer:
+      group-id: order-feedback-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+    listener:
+      # MANUAL_IMMEDIATE commits to Kafka the exact millisecond acknowledge() is called
+      ack-mode: manual_immediate
+management:
+  zipkin:
+    tracing:
+      endpoint: ""
+
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+      # Options: "*" to expose everything, or specific endpoints like "health", "metrics"
+        include: "health,metrics,info"
+    health:
+      # Shows detailed component breakdowns (Disk space, DB connection status, Kafka cluster status)
+      show-details: always
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      createOrderBreaker:
+        # Move from CLOSED to OPEN state if 50% of requests fail
+        failure-rate-threshold: 50
+        # Wait 10 seconds in the OPEN state before trying again
+        wait-duration-in-open-state: 10s
+        # Use a sliding window of the last 10 requests to calculate the failure rate
+        sliding-window-size: 10
+        # Minimum requests required before calculating failure rate
+        minimum-number-of-calls: 5
+        # Move to HALF_OPEN and test the waters with 3 requests
+        permitted-number-of-calls-in-half-open-state: 3
+
+
+  retry:
+    instances:
+      createOrderRetry:
+        # Maximum number of execution attempts (Initial attempt + 2 retries)
+        max-attempts: 3
+        # Baseline wait time before firing a retry attempt
+        wait-duration: 500ms
+        # Multiplies the wait-duration exponentially per attempt to let systems recover
+        # 1st retry: 500ms, 2nd retry: 1000ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        # Explicitly retry ONLY on connection or network-level timeouts
+        retry-exceptions:
+          - org.springframework.web.client.HttpServerErrorException.InternalServerError
